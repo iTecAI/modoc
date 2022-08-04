@@ -49,8 +49,8 @@ export default class RenderParser {
      * @param renderer RenderItem specification or SourceItem
      */
     constructor(
-        public data: RawData,
-        private renderer: AllRenderItems | AllSourceItems
+        protected data: RawData,
+        protected renderer: AllRenderItems | AllSourceItems
     ) {
         this.children = [];
 
@@ -59,8 +59,34 @@ export default class RenderParser {
         } else {
             this.children = this.parseSourceItem(this.renderer);
         }
+    }
 
-        console.log(this.children);
+    /**
+     * Sets new data & re-parses all children
+     * @param data New data
+     */
+    public setData(data: RawData) {
+        this.data = data;
+
+        if (isRenderItem(this.renderer)) {
+            this.children = this.expandRenderItems(this.renderer);
+        } else {
+            this.children = this.parseSourceItem(this.renderer);
+        }
+    }
+
+    /**
+     * Sets new renderer and re-parses all children
+     * @param renderer New RenderItem or SourceItem
+     */
+    public setRenderer(renderer: AllRenderItems | AllSourceItems) {
+        this.renderer = renderer;
+
+        if (isRenderItem(this.renderer)) {
+            this.children = this.expandRenderItems(this.renderer);
+        } else {
+            this.children = this.parseSourceItem(this.renderer);
+        }
     }
 
     /**

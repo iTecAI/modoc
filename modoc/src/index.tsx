@@ -1,5 +1,36 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
+import RenderParser from "./renderParser";
+import AllRenderItems from "./types/renderTypes";
+import AllSourceItems from "./types/sourceTypes";
+import { RawData } from "./types/types";
 
-export default function ModularRenderer() {
-    return <div>Test</div>;
+type ModularRendererProps = {
+    data: RawData;
+    renderer: AllRenderItems | AllSourceItems;
+    parser: any;
+};
+
+/**
+ * ModularRenderer functional component
+ * @param props Instance of ModularRenderProps
+ * @return Rendered tree
+ */
+export default function ModularRenderer(props: ModularRendererProps) {
+    const [parser, _] = useState<RenderParser>(
+        new props.parser(props.data, props.renderer)
+    );
+    const [rendered, setRendered] = useState<JSX.Element>(parser.render());
+
+    useEffect(() => {
+        parser.setData(props.data);
+        setRendered(parser.render());
+    }, [props.data]);
+
+    useEffect(() => {
+        parser.setRenderer(props.renderer);
+        setRendered(parser.render());
+    }, [props.renderer]);
+
+    return <div className="modoc_modular-renderer">{rendered}</div>;
 }
