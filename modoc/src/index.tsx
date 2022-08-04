@@ -17,7 +17,7 @@ type ModularRendererProps = {
  * @return Rendered tree
  */
 export default function ModularRenderer(props: ModularRendererProps) {
-    const [parser, _] = useState<RenderParser>(
+    const [parser] = useState<RenderParser>(
         new props.parser(props.data, props.renderer)
     );
     const [rendered, setRendered] = useState<JSX.Element>(parser.render());
