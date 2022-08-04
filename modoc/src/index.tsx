@@ -1,14 +1,15 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import RenderParser from "./renderParser";
-import AllRenderItems from "./types/renderTypes";
-import AllSourceItems from "./types/sourceTypes";
+import { AllRenderItems } from "./types";
+import { AllSourceItems } from "./types";
 import { RawData } from "./types/types";
+import { MuiRenderParser } from "./renderers";
 
 type ModularRendererProps = {
     data: RawData;
     renderer: AllRenderItems | AllSourceItems;
-    parser: any;
+    parser: typeof RenderParser;
 };
 
 /**
@@ -16,7 +17,7 @@ type ModularRendererProps = {
  * @param props Instance of ModularRenderProps
  * @return Rendered tree
  */
-export default function ModularRenderer(props: ModularRendererProps) {
+export function ModularRenderer(props: ModularRendererProps) {
     const [parser] = useState<RenderParser>(
         new props.parser(props.data, props.renderer)
     );
@@ -34,3 +35,5 @@ export default function ModularRenderer(props: ModularRendererProps) {
 
     return <div className="modoc_modular-renderer">{rendered}</div>;
 }
+
+export { MuiRenderParser };

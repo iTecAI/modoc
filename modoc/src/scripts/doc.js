@@ -3,7 +3,12 @@ const fs = require("fs");
 
 /** @type {import('ts-json-schema-generator/dist/src/Config').Config} */
 const configs = [
-    
+    {
+        path: "./src/types/index.ts",
+        tsconfig: "./tsconfig.json",
+        type: "AllRenderItems", // Or <type-name> if you want to generate schema for that one type only,
+        output: "./schema/renderItem.schema.json"
+    },
 ];
 
 for (let config of configs) {

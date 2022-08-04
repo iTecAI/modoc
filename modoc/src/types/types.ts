@@ -1,7 +1,4 @@
-import AllRenderItems from "./renderTypes";
-import AllSourceItems from "./sourceTypes";
-
-export type Literal = string | number | boolean;
+export type Literal = string | number | boolean | null | undefined;
 
 export type TextItem = {
     supertype: "value";
@@ -34,10 +31,6 @@ export type FunctionalItem = {
 export type DataItem = {
     supertype: "value";
     type: "data";
-    /**
-     * Dot path to raw value in data (ie. path.to.data)
-     * @type {string}
-     */
     source: string;
 };
 
@@ -45,7 +38,8 @@ export type ValueItem = Literal | TextItem | FunctionalItem | DataItem;
 export type ValueStringDirective = "data";
 export const ValueStringDirectiveNames = ["data"];
 
-export type RawData = { [key: string]: ValueItem | RawData };
+export type RawDataValue = ValueItem | RawData | any[];
+export type RawData = { [key: string]: RawDataValue };
 
 export type ParsedFunction = {
     /**
@@ -56,17 +50,3 @@ export type ParsedFunction = {
     function: string | string[];
     opts: { [key: string]: Literal | ValueItem };
 };
-
-export interface RenderItem {
-    supertype: "render";
-    type: string;
-    conditionalRender?: ParsedFunction;
-    children?: AllRenderItems[] | AllSourceItems;
-    child?: AllRenderItems;
-}
-
-export interface SourceItem {
-    supertype: "source";
-    type: string;
-    conditionalRender?: ParsedFunction;
-}

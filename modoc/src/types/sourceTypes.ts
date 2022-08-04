@@ -1,7 +1,8 @@
-import AllRenderItems from "./renderTypes";
-import { SourceItem, ParsedFunction } from "./types";
+import { AllRenderItems } from ".";
+import { ParsedFunction } from "./types";
 
-export interface ListSourceItem extends SourceItem {
+export type ListSourceItem = {
+    supertype: "source";
     type: "list";
     /**
      * Dot path to an array value in the data (ie. i.am.a.path.to.an.array)
@@ -9,9 +10,11 @@ export interface ListSourceItem extends SourceItem {
      */
     source: string;
     renderer: AllRenderItems;
-}
+    conditionalRender?: ParsedFunction;
+};
 
-export interface GeneratorSourceItem extends SourceItem {
+export type GeneratorSourceItem = {
+    supertype: "source";
     type: "generator";
     /**
      * A function that takes data and outputs an array of {[key: string]: ValueItem | {...}}
@@ -19,7 +22,5 @@ export interface GeneratorSourceItem extends SourceItem {
      */
     function: ParsedFunction;
     renderer: AllRenderItems;
-}
-
-type AllSourceItems = ListSourceItem | GeneratorSourceItem;
-export default AllSourceItems;
+    conditionalRender?: ParsedFunction;
+};

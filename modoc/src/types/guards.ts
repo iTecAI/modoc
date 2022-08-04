@@ -1,5 +1,4 @@
-import AllRenderItems from "./renderTypes";
-import AllSourceItems from "./sourceTypes";
+import { AllRenderItems, AllSourceItems } from ".";
 import { Literal, ValueItem } from "./types";
 
 export function isSourceItem(item: any): item is AllSourceItems {
@@ -11,7 +10,7 @@ export function isRenderItem(item: any): item is AllRenderItems {
 }
 
 export function isArray(item: any): item is Array<any> {
-    return item instanceof Array<any>;
+    return item instanceof Array;
 }
 
 export function isValueItem(item: any): item is ValueItem {

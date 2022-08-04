@@ -56,7 +56,9 @@
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
     "ts-json-schema-generator": "^1.0.0",
-    "typescript": "^3.7.5"
+    "ts-to-json": "^1.7.0",
+    "typescript": "^3.7.5",
+    "typescript-json-schema": "^0.54.0"
   },
   "files": [
     "dist"

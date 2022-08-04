@@ -1,9 +1,6 @@
 import { isArray, isLiteral, isRenderItem, isSourceItem } from "./types/guards";
-import AllRenderItems from "./types/renderTypes";
-import AllSourceItems, {
-    ListSourceItem,
-    GeneratorSourceItem
-} from "./types/sourceTypes";
+import { AllRenderItems, AllSourceItems } from "./types";
+import { GeneratorSourceItem, ListSourceItem } from "./types/sourceTypes";
 import {
     ParsedFunction,
     RawData,
@@ -15,6 +12,11 @@ import { parseFunction } from "./util";
 import parseNested from "./util/nestedParser";
 import React from "react";
 
+/**
+ * Base Render Parser class. Should be extended.
+ * When extending, set public SELF_CONSTRUCTOR to typeof <new class>
+ * And set public sourceParsers and public renderers as needed.
+ */
 export default class RenderParser {
     /**
      * Set this when extending, it should be the new class that extends RenderParser.
@@ -201,7 +203,7 @@ export default class RenderParser {
      * @returns Array of RenderParsers
      */
     protected expandRenderItems(item: AllRenderItems): RenderParser[] {
-        if (item.children) {
+        if ("children" in item) {
             if (isSourceItem(item.children)) {
                 return this.parseSourceItem(item.children); // TODO
             } else {
@@ -209,7 +211,7 @@ export default class RenderParser {
                     this.constructSelf(this.data, v)
                 );
             }
-        } else if (item.child) {
+        } else if ("child" in item) {
             return [this.constructSelf(this.data, item.child)];
         } else {
             return [];
@@ -236,7 +238,7 @@ export default class RenderParser {
     public render(): JSX.Element {
         if (this.renderer.conditionalRender) {
             if (!this.execParsedFunction(this.renderer.conditionalRender)) {
-                return <></>;
+                return <span />;
             }
         }
         if (this.renderer.supertype === "render") {
@@ -249,11 +251,11 @@ export default class RenderParser {
             }
         } else {
             return (
-                <>
+                <span>
                     {this.renderers[this.renderer.type](
                         this.children.map((r) => r.render())
                     )}
-                </>
+                </span>
             );
         }
     }
