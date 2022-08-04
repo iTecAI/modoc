@@ -16,9 +16,18 @@ import parseNested from "./util/nestedParser";
 import React from "react";
 
 export default class RenderParser {
+    /**
+     * Set this when extending, it should be the new class that extends RenderParser.
+     */
     public SELF_CONSTRUCTOR = RenderParser;
+    /**
+     * Array of parsed children (all value items parsed, expanded to RenderParsers)
+     */
     private children: RenderParser[];
 
+    /**
+     * Add additional sourceParsers here when extending
+     */
     public sourceParsers: {
         [key: string]: (item: AllSourceItems) => RenderParser[];
     } = {
@@ -26,10 +35,19 @@ export default class RenderParser {
         generator: this.parseGeneratorSourceItem
     };
 
+    /**
+     * Add additional render functions here when extending
+     */
     public renderers: {
         [key: string]: (children: JSX.Element[]) => JSX.Element;
     } = {};
 
+    /**
+     * RenderParser is the React framework-agnostic base class.
+     * It has no rendering capability by itself, but can be extended to add such capability.
+     * @param data Raw data object, likely from server or something
+     * @param renderer RenderItem specification or SourceItem
+     */
     constructor(
         public data: RawData,
         private renderer: AllRenderItems | AllSourceItems
@@ -45,6 +63,11 @@ export default class RenderParser {
         console.log(this.children);
     }
 
+    /**
+     * Parser for ListSourceItems
+     * @param item ListSourceItem
+     * @returns Array of RenderParser
+     */
     protected parseListSourceItem(item: ListSourceItem): RenderParser[] {
         const data = parseNested(this.data, item.source);
         if (isArray(data)) {
@@ -54,6 +77,11 @@ export default class RenderParser {
         }
     }
 
+    /**
+     * Parser for GeneratorSourceItems
+     * @param item GeneratorSourceItem
+     * @returns Array of RenderParser
+     */
     protected parseGeneratorSourceItem(
         item: GeneratorSourceItem
     ): RenderParser[] {
@@ -63,6 +91,11 @@ export default class RenderParser {
         );
     }
 
+    /**
+     * Executes a ParsedFunction object, passing in required data and loading string code.
+     * @param func ParsedFunction object
+     * @returns Returned data
+     */
     protected execParsedFunction(func: ParsedFunction): any {
         const executor = parseFunction(func.function);
         const parsedOptions: { [key: string]: any } = {};
@@ -72,6 +105,11 @@ export default class RenderParser {
         return executor(parsedOptions);
     }
 
+    /**
+     * Parse a ValueItem. Likely will be the most useful in render functions.
+     * @param item ValueItem to parse. Can be a literal, a "$directive:data" string, or a Text/Functional/DataItem
+     * @returns The value retrieved/created
+     */
     protected parseValueItem(item: ValueItem): any {
         if (typeof item === "string") {
             if (item.startsWith("$")) {
@@ -119,6 +157,11 @@ export default class RenderParser {
         }
     }
 
+    /**
+     * Parses a SourceItem
+     * @param item SourceItem representation
+     * @returns Array of RenderParsers
+     */
     protected parseSourceItem(item: AllSourceItems): RenderParser[] {
         if (item.type in this.sourceParsers) {
             return this.sourceParsers[item.type].bind(this)(item);
@@ -126,6 +169,11 @@ export default class RenderParser {
         throw `Unknown SourceItem type ${item.type}`;
     }
 
+    /**
+     * Expands RenderItem children into RenderParsers
+     * @param item RenderItem
+     * @returns Array of RenderParsers
+     */
     protected expandRenderItems(item: AllRenderItems): RenderParser[] {
         if (item.children) {
             if (isSourceItem(item.children)) {
@@ -142,6 +190,12 @@ export default class RenderParser {
         }
     }
 
+    /**
+     * Constructs self (for internal functions that instantiate new RenderParsers)
+     * @param data RawData
+     * @param renderer RenderItem or SourceItem
+     * @returns RenderParser instance
+     */
     protected constructSelf(
         data: RawData,
         renderer: AllRenderItems | AllSourceItems
@@ -149,6 +203,10 @@ export default class RenderParser {
         return new this.SELF_CONSTRUCTOR(data, renderer);
     }
 
+    /**
+     * Renders using current data and renderer
+     * @returns JSX Element
+     */
     public render(): JSX.Element {
         if (this.renderer.conditionalRender) {
             if (!this.execParsedFunction(this.renderer.conditionalRender)) {
