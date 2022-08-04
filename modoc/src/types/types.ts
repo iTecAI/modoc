@@ -1,3 +1,6 @@
+import AllRenderItems from "./renderTypes";
+import AllSourceItems from "./sourceTypes";
+
 export type Literal = string | number | boolean;
 
 export type TextItem = {
@@ -10,10 +13,10 @@ export type TextItem = {
      */
     content: string;
     /**
-     * @type {{[key: string]: string | ValueItem}}
+     * @type {{[key: string]: ValueItem}}
      * A mapping of substitution names to values
      */
-    substitutions: { [key: string]: Literal | ValueItem };
+    substitutions: { [key: string]: ValueItem };
 };
 
 export type FunctionalItem = {
@@ -25,7 +28,7 @@ export type FunctionalItem = {
      *     (opts: {[key: string]: any}) => string | TextItem
      */
     function: string | string[];
-    opts: { [key: string]: Literal | ValueItem };
+    opts: { [key: string]: ValueItem };
 };
 
 export type DataItem = {
@@ -39,6 +42,10 @@ export type DataItem = {
 };
 
 export type ValueItem = Literal | TextItem | FunctionalItem | DataItem;
+export type ValueStringDirective = "data";
+export const ValueStringDirectiveNames = ["data"];
+
+export type RawData = { [key: string]: ValueItem | RawData };
 
 export type ParsedFunction = {
     /**
@@ -54,6 +61,8 @@ export interface RenderItem {
     supertype: "render";
     type: string;
     conditionalRender?: ParsedFunction;
+    children?: AllRenderItems[] | AllSourceItems;
+    child?: AllRenderItems;
 }
 
 export interface SourceItem {

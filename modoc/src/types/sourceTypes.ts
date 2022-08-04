@@ -1,4 +1,5 @@
-import { SourceItem, ParsedFunction, RenderItem } from "./types";
+import AllRenderItems from "./renderTypes";
+import { SourceItem, ParsedFunction } from "./types";
 
 export interface ListSourceItem extends SourceItem {
     type: "list";
@@ -7,17 +8,17 @@ export interface ListSourceItem extends SourceItem {
      * @type {string}
      */
     source: string;
-    renderer: RenderItem;
+    renderer: AllRenderItems;
 }
 
 export interface GeneratorSourceItem extends SourceItem {
     type: "generator";
     /**
-     * A function that takes data and outputs an array of {[key: string]: Literal | ValueItem}
+     * A function that takes data and outputs an array of {[key: string]: ValueItem | {...}}
      * @type {string}
      */
     function: ParsedFunction;
-    renderer: RenderItem;
+    renderer: AllRenderItems;
 }
 
 type AllSourceItems = ListSourceItem | GeneratorSourceItem;
