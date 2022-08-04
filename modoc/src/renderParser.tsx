@@ -13,14 +13,22 @@ import {
 } from "./types/types";
 import { parseFunction } from "./util";
 import parseNested from "./util/nestedParser";
+import React from "react";
 
 export default class RenderParser {
+    public SELF_CONSTRUCTOR = RenderParser;
     private children: RenderParser[];
+
     public sourceParsers: {
         [key: string]: (item: AllSourceItems) => RenderParser[];
     } = {
-        list: this.parseListSourceItem
+        list: this.parseListSourceItem,
+        generator: this.parseGeneratorSourceItem
     };
+
+    public renderers: {
+        [key: string]: (children: JSX.Element[]) => JSX.Element;
+    } = {};
 
     constructor(
         public data: RawData,
@@ -37,23 +45,25 @@ export default class RenderParser {
         console.log(this.children);
     }
 
-    public parseListSourceItem(item: ListSourceItem): RenderParser[] {
+    protected parseListSourceItem(item: ListSourceItem): RenderParser[] {
         const data = parseNested(this.data, item.source);
         if (isArray(data)) {
-            return data.map((d) => new RenderParser(d, item.renderer));
+            return data.map((d) => this.constructSelf(d, item.renderer));
         } else {
             throw `${JSON.stringify(data)} is not an any[] instance.`;
         }
     }
 
-    public parseGeneratorSourceItem(item: GeneratorSourceItem): RenderParser[] {
+    protected parseGeneratorSourceItem(
+        item: GeneratorSourceItem
+    ): RenderParser[] {
         const rawResults: RawData[] = this.execParsedFunction(item.function);
-        return rawResults.map(
-            (result) => new RenderParser(result, item.renderer)
+        return rawResults.map((result) =>
+            this.constructSelf(result, item.renderer)
         );
     }
 
-    public execParsedFunction(func: ParsedFunction): any {
+    protected execParsedFunction(func: ParsedFunction): any {
         const executor = parseFunction(func.function);
         const parsedOptions: { [key: string]: any } = {};
         for (let k of Object.keys(func.opts)) {
@@ -62,7 +72,7 @@ export default class RenderParser {
         return executor(parsedOptions);
     }
 
-    public parseValueItem(item: ValueItem): any {
+    protected parseValueItem(item: ValueItem): any {
         if (typeof item === "string") {
             if (item.startsWith("$")) {
                 const directiveRaw: string = item.split(":")[0].split("$")[1];
@@ -109,24 +119,58 @@ export default class RenderParser {
         }
     }
 
-    private parseSourceItem(item: AllSourceItems): RenderParser[] {
+    protected parseSourceItem(item: AllSourceItems): RenderParser[] {
         if (item.type in this.sourceParsers) {
-            return this.sourceParsers[item.type](item);
+            return this.sourceParsers[item.type].bind(this)(item);
         }
         throw `Unknown SourceItem type ${item.type}`;
     }
 
-    private expandRenderItems(item: AllRenderItems): RenderParser[] {
+    protected expandRenderItems(item: AllRenderItems): RenderParser[] {
         if (item.children) {
             if (isSourceItem(item.children)) {
                 return this.parseSourceItem(item.children); // TODO
             } else {
-                return item.children.map((v) => new RenderParser(this.data, v));
+                return item.children.map((v) =>
+                    this.constructSelf(this.data, v)
+                );
             }
         } else if (item.child) {
-            return [new RenderParser(this.data, item.child)];
+            return [this.constructSelf(this.data, item.child)];
         } else {
             return [];
+        }
+    }
+
+    protected constructSelf(
+        data: RawData,
+        renderer: AllRenderItems | AllSourceItems
+    ): RenderParser {
+        return new this.SELF_CONSTRUCTOR(data, renderer);
+    }
+
+    public render(): JSX.Element {
+        if (this.renderer.conditionalRender) {
+            if (!this.execParsedFunction(this.renderer.conditionalRender)) {
+                return <></>;
+            }
+        }
+        if (this.renderer.supertype === "render") {
+            if (Object.keys(this.renderers).includes(this.renderer.type)) {
+                return this.renderers[this.renderer.type](
+                    this.children.map((r) => r.render())
+                );
+            } else {
+                throw `Unknown renderer type ${this.renderer.type}`;
+            }
+        } else {
+            return (
+                <>
+                    {this.renderers[this.renderer.type](
+                        this.children.map((r) => r.render())
+                    )}
+                </>
+            );
         }
     }
 }
