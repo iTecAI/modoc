@@ -1,5 +1,6 @@
-import { AllRenderItems, AllSourceItems } from ".";
-import { Literal, ValueItem } from "./types";
+import { AllSourceItems } from ".";
+import { AllRenderItems } from ".";
+import { Literal, ValueItem } from ".";
 
 export function isSourceItem(item: any): item is AllSourceItems {
     return item.supertype && item.supertype === "source";

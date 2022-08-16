@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import RenderParser from "./renderParser";
 import { AllRenderItems } from "./types";
 import { AllSourceItems } from "./types";
-import { RawData } from "./types/types";
+import { RawData } from "./types";
 import { MuiRenderParser } from "./renderers";
 
 type ModularRendererProps = {

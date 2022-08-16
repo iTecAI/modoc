@@ -7,7 +7,7 @@ const configs = [
         path: "./src/types/index.ts",
         tsconfig: "./tsconfig.json",
         type: "AllRenderItems", // Or <type-name> if you want to generate schema for that one type only,
-        output: "./schema/renderItem.schema.json"
+        output: "./schema/rendererItems.schema.json"
     },
 ];
 
