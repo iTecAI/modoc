@@ -295,6 +295,33 @@
         "text": {
           "$ref": "#/definitions/ValueItem"
         },
+        "textType": {
+          "type": "string",
+          "enum": [
+            "body1",
+            "body2",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "subtitle1",
+            "subtitle2"
+          ]
+        },
+        "style": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "italic",
+              "bold",
+              "strikethrough",
+              "underline"
+            ]
+          }
+        },
         "conditionalRender": {
           "$ref": "#/definitions/ParsedFunction"
         }
@@ -302,7 +329,9 @@
       "required": [
         "supertype",
         "type",
-        "text"
+        "text",
+        "textType",
+        "style"
       ],
       "additionalProperties": false
     },
@@ -320,6 +349,14 @@
         "child": {
           "$ref": "#/definitions/AllRenderItems"
         },
+        "variant": {
+          "type": "string",
+          "enum": [
+            "full",
+            "inset",
+            "middle"
+          ]
+        },
         "conditionalRender": {
           "$ref": "#/definitions/ParsedFunction"
         }
@@ -327,7 +364,7 @@
       "required": [
         "supertype",
         "type",
-        "child"
+        "variant"
       ],
       "additionalProperties": false
     }
