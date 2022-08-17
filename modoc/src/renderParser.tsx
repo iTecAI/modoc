@@ -214,7 +214,7 @@ export default class RenderParser {
                     this.constructSelf(this.data, v)
                 );
             }
-        } else if ("child" in item) {
+        } else if ("child" in item && item.child) {
             return [this.constructSelf(this.data, item.child)];
         } else {
             return [];
