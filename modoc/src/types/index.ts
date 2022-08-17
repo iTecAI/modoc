@@ -86,3 +86,5 @@ export type AllRenderItems =
     | RenderTextItem
     | RenderDividerItem;
 export type AllSourceItems = ListSourceItem | GeneratorSourceItem;
+
+export type AllItems = AllRenderItems | AllSourceItems;

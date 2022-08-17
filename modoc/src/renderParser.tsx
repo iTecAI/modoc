@@ -1,13 +1,13 @@
 import { isArray, isLiteral, isRenderItem, isSourceItem } from "./types/guards";
 import { AllRenderItems, AllSourceItems } from "./types";
-import { GeneratorSourceItem, ListSourceItem } from "./types/sourceTypes";
+import { GeneratorSourceItem, ListSourceItem } from "./types";
 import {
     ParsedFunction,
     RawData,
     ValueItem,
     ValueStringDirective,
     ValueStringDirectiveNames
-} from "./types/types";
+} from "./types";
 import { parseFunction } from "./util";
 import parseNested from "./util/nestedParser";
 import React from "react";
@@ -31,7 +31,7 @@ export default class RenderParser {
      * Add additional sourceParsers here when extending
      */
     public sourceParsers: {
-        [key: string]: (item: AllSourceItems) => RenderParser[];
+        [key: string]: (item: any) => RenderParser[];
     } = {
         list: this.parseListSourceItem,
         generator: this.parseGeneratorSourceItem
@@ -41,7 +41,10 @@ export default class RenderParser {
      * Add additional render functions here when extending
      */
     public renderers: {
-        [key: string]: (children: JSX.Element[]) => JSX.Element;
+        [key: string]: (
+            children: JSX.Element[],
+            object: AllRenderItems
+        ) => JSX.Element;
     } = {};
 
     /**
@@ -244,7 +247,8 @@ export default class RenderParser {
         if (this.renderer.supertype === "render") {
             if (Object.keys(this.renderers).includes(this.renderer.type)) {
                 return this.renderers[this.renderer.type](
-                    this.children.map((r) => r.render())
+                    this.children.map((r) => r.render()),
+                    this.renderer
                 );
             } else {
                 throw `Unknown renderer type ${this.renderer.type}`;
@@ -253,7 +257,8 @@ export default class RenderParser {
             return (
                 <span>
                     {this.renderers[this.renderer.type](
-                        this.children.map((r) => r.render())
+                        this.children.map((r) => r.render()),
+                        this.renderer.renderer
                     )}
                 </span>
             );
