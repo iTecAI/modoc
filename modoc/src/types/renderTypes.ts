@@ -33,3 +33,78 @@ export type RenderDividerItem = {
     variant: "full" | "inset" | "middle";
     conditionalRender?: ParsedFunction;
 };
+
+export type RenderChipItem = {
+    supertype: "render";
+    type: "chip";
+    text: ValueItem;
+    avatar?:
+        | {
+              type: "icon";
+              name: string;
+          }
+        | {
+              type: "text";
+              text: ValueItem;
+          }
+        | {
+              type: "image";
+              source: ValueItem;
+              alt: ValueItem;
+          };
+};
+
+export type RenderStackItem = {
+    supertype: "render";
+    type: "stack";
+    direction: "horizontal" | "vertical";
+    spacing: number;
+    children: AllRenderItems[] | AllSourceItems;
+};
+
+export type RenderListItem = {
+    supertype: "render";
+    type: "list";
+    itemMarkers:
+        | {
+              ordered: true;
+              style:
+                  | "armenian"
+                  | "cjk-ideographic"
+                  | "decimal"
+                  | "decimal-leading-zero"
+                  | "georgian"
+                  | "hebrew"
+                  | "hiragana"
+                  | "hiragana-iroha"
+                  | "katakana"
+                  | "katakana-iroha"
+                  | "lower-alpha"
+                  | "lower-greek"
+                  | "lower-latin"
+                  | "lower-roman"
+                  | "upper-alpha"
+                  | "upper-greek"
+                  | "upper-latin"
+                  | "upper-roman";
+          }
+        | {
+              ordered: false;
+              style: "circle" | "disc" | "square";
+          };
+    children: AllRenderItems[] | AllSourceItems;
+};
+
+export type RenderTableItem = {
+    supertype: "render";
+    type: "table";
+    title?: ValueItem;
+    headers: AllRenderItems[] | AllSourceItems;
+    rows: RenderTableRowItem[] | AllSourceItems<RenderTableRowItem>;
+};
+
+export type RenderTableRowItem = {
+    supertype: "render";
+    type: "tableRow";
+    cells: AllRenderItems[] | AllSourceItems;
+};

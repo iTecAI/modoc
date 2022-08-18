@@ -8,7 +8,9 @@ import {
 import { Divider, Typography } from "@mui/material";
 import { RawData, AllRenderItems, AllSourceItems } from "../types";
 
-export default class MuiRenderParser extends RenderParser {
+export default class MuiRenderParser<
+    T extends AllRenderItems = AllRenderItems
+> extends RenderParser<T> {
     public renderers: {
         [key: string]: (children: JSX.Element[], object: any) => JSX.Element;
     } = {

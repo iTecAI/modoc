@@ -51,7 +51,7 @@ export type ParsedFunction = {
     opts: { [key: string]: Literal | ValueItem };
 };
 
-export type ListSourceItem = {
+export type ListSourceItem<T> = {
     supertype: "source";
     type: "list";
     /**
@@ -63,7 +63,7 @@ export type ListSourceItem = {
     conditionalRender?: ParsedFunction;
 };
 
-export type GeneratorSourceItem = {
+export type GeneratorSourceItem<T> = {
     supertype: "source";
     type: "generator";
     /**
@@ -85,6 +85,8 @@ export type AllRenderItems =
     | RenderGroupItem
     | RenderTextItem
     | RenderDividerItem;
-export type AllSourceItems = ListSourceItem | GeneratorSourceItem;
+export type AllSourceItems<T = any> =
+    | ListSourceItem<T>
+    | GeneratorSourceItem<T>;
 
 export type AllItems = AllRenderItems | AllSourceItems;

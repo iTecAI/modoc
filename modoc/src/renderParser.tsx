@@ -17,7 +17,7 @@ import React from "react";
  * When extending, set public constructSelf function
  * And set public sourceParsers and public renderers as needed.
  */
-export default class RenderParser {
+export default class RenderParser<T extends AllRenderItems = AllRenderItems> {
     /**
      * Array of parsed children (all value items parsed, expanded to RenderParsers)
      */
@@ -94,7 +94,9 @@ export default class RenderParser {
      * @param item ListSourceItem
      * @returns Array of RenderParser
      */
-    parseListSourceItem(item: ListSourceItem): RenderParser[] {
+    parseListSourceItem<T extends AllRenderItems>(
+        item: ListSourceItem<T>
+    ): RenderParser<T>[] {
         const data = parseNested(this.data, item.source);
         if (isArray(data)) {
             return data.map((d) => this.constructSelf(d, item.renderer));
@@ -108,7 +110,9 @@ export default class RenderParser {
      * @param item GeneratorSourceItem
      * @returns Array of RenderParser
      */
-    parseGeneratorSourceItem(item: GeneratorSourceItem): RenderParser[] {
+    parseGeneratorSourceItem<T extends AllRenderItems>(
+        item: GeneratorSourceItem<T>
+    ): RenderParser<T>[] {
         const rawResults: RawData[] = this.execParsedFunction(item.function);
         return rawResults.map((result) =>
             this.constructSelf(result, item.renderer)
@@ -187,7 +191,9 @@ export default class RenderParser {
      * @param item SourceItem representation
      * @returns Array of RenderParsers
      */
-    parseSourceItem(item: AllSourceItems): RenderParser[] {
+    parseSourceItem<T extends AllRenderItems = AllRenderItems>(
+        item: AllSourceItems<T>
+    ): RenderParser<T>[] {
         if (item.type in this.sourceParsers) {
             return this.sourceParsers[item.type].bind(this)(item);
         }
@@ -221,11 +227,11 @@ export default class RenderParser {
      * @param renderer RenderItem or SourceItem
      * @returns RenderParser instance
      */
-    constructSelf(
+    constructSelf<T extends AllRenderItems = AllRenderItems>(
         data: RawData,
         renderer: AllRenderItems | AllSourceItems
     ): RenderParser {
-        return new RenderParser(data, renderer);
+        return new RenderParser<T>(data, renderer);
     }
 
     /**
