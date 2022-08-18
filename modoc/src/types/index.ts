@@ -78,13 +78,23 @@ export type GeneratorSourceItem<T> = {
 import {
     RenderGroupItem,
     RenderTextItem,
-    RenderDividerItem
+    RenderDividerItem,
+    RenderChipItem,
+    RenderListItem,
+    RenderStackItem,
+    RenderTableItem,
+    RenderTableRowItem
 } from "./renderTypes";
 
 export type AllRenderItems =
     | RenderGroupItem
     | RenderTextItem
-    | RenderDividerItem;
+    | RenderDividerItem
+    | RenderChipItem
+    | RenderListItem
+    | RenderStackItem
+    | RenderTableItem
+    | RenderTableRowItem;
 export type AllSourceItems<T = any> =
     | ListSourceItem<T>
     | GeneratorSourceItem<T>;

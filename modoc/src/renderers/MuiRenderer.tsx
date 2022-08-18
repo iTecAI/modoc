@@ -1,11 +1,12 @@
 import RenderParser from "../renderParser";
 import React from "react";
 import {
+    RenderChipItem,
     RenderDividerItem,
     RenderGroupItem,
     RenderTextItem
 } from "../types/renderTypes";
-import { Divider, Typography } from "@mui/material";
+import { Chip, Divider, Typography } from "@mui/material";
 import { RawData, AllRenderItems, AllSourceItems } from "../types";
 
 export default class MuiRenderParser<
@@ -70,6 +71,22 @@ export default class MuiRenderParser<
             >
                 {children}
             </Divider>
+        );
+    }
+
+    renderChip(_: JSX.Element[], object: RenderChipItem): JSX.Element {
+        let avatar: JSX.Element | undefined = undefined;
+        if (object.avatar) {
+            switch (object.avatar.type) {
+                case "icon":
+                    break;
+            }
+        }
+        return (
+            <Chip
+                variant={object.filled ? "filled" : "outlined"}
+                label={this.parseValueItem(object.text)}
+            />
         );
     }
 }

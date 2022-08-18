@@ -37,7 +37,9 @@ export type RenderDividerItem = {
 export type RenderChipItem = {
     supertype: "render";
     type: "chip";
+    conditionalRender?: ParsedFunction;
     text: ValueItem;
+    filled: boolean;
     avatar?:
         | {
               type: "icon";
@@ -57,6 +59,7 @@ export type RenderChipItem = {
 export type RenderStackItem = {
     supertype: "render";
     type: "stack";
+    conditionalRender?: ParsedFunction;
     direction: "horizontal" | "vertical";
     spacing: number;
     children: AllRenderItems[] | AllSourceItems;
@@ -65,6 +68,7 @@ export type RenderStackItem = {
 export type RenderListItem = {
     supertype: "render";
     type: "list";
+    conditionalRender?: ParsedFunction;
     itemMarkers:
         | {
               ordered: true;
@@ -98,6 +102,7 @@ export type RenderListItem = {
 export type RenderTableItem = {
     supertype: "render";
     type: "table";
+    conditionalRender?: ParsedFunction;
     title?: ValueItem;
     headers: AllRenderItems[] | AllSourceItems;
     rows: RenderTableRowItem[] | AllSourceItems<RenderTableRowItem>;
@@ -106,5 +111,6 @@ export type RenderTableItem = {
 export type RenderTableRowItem = {
     supertype: "render";
     type: "tableRow";
+    conditionalRender?: ParsedFunction;
     cells: AllRenderItems[] | AllSourceItems;
 };
