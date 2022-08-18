@@ -1,15 +1,14 @@
 import RenderParser from "../renderParser";
 import React from "react";
-import { AllRenderItems } from "../types";
 import {
     RenderDividerItem,
     RenderGroupItem,
     RenderTextItem
 } from "../types/renderTypes";
 import { Divider, Typography } from "@mui/material";
+import { RawData, AllRenderItems, AllSourceItems } from "../types";
 
 export default class MuiRenderParser extends RenderParser {
-    public SELF_CONSTRUCTOR: typeof RenderParser = MuiRenderParser;
     public renderers: {
         [key: string]: (children: JSX.Element[], object: any) => JSX.Element;
     } = {
@@ -18,14 +17,18 @@ export default class MuiRenderParser extends RenderParser {
         divider: this.renderDivider
     };
 
-    public renderGroup(
-        children: JSX.Element[],
-        _: RenderGroupItem
-    ): JSX.Element {
+    constructSelf(
+        data: RawData,
+        renderer: AllRenderItems | AllSourceItems
+    ): MuiRenderParser {
+        return new MuiRenderParser(data, renderer);
+    }
+
+    renderGroup(children: JSX.Element[], _: RenderGroupItem): JSX.Element {
         return <div className="modoc_mui-group">{children}</div>;
     }
 
-    public renderText(_: JSX.Element[], object: RenderTextItem): JSX.Element {
+    renderText(_: JSX.Element[], object: RenderTextItem): JSX.Element {
         return (
             <Typography
                 variant={object.textType}
@@ -44,12 +47,12 @@ export default class MuiRenderParser extends RenderParser {
                         : undefined
                 }}
             >
-                {object.text}
+                <span>{this.parseValueItem(object.text)}</span>
             </Typography>
         );
     }
 
-    public renderDivider(
+    renderDivider(
         children: JSX.Element[],
         object: RenderDividerItem
     ): JSX.Element {

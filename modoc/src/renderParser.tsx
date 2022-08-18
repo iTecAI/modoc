@@ -14,14 +14,10 @@ import React from "react";
 
 /**
  * Base Render Parser class. Should be extended.
- * When extending, set public SELF_CONSTRUCTOR to typeof <new class>
+ * When extending, set public constructSelf function
  * And set public sourceParsers and public renderers as needed.
  */
 export default class RenderParser {
-    /**
-     * Set this when extending, it should be the new class that extends RenderParser.
-     */
-    public SELF_CONSTRUCTOR = RenderParser;
     /**
      * Array of parsed children (all value items parsed, expanded to RenderParsers)
      */
@@ -58,7 +54,6 @@ export default class RenderParser {
         protected renderer: AllRenderItems | AllSourceItems
     ) {
         this.children = [];
-
         if (isRenderItem(this.renderer)) {
             this.children = this.expandRenderItems(this.renderer);
         } else {
@@ -70,7 +65,7 @@ export default class RenderParser {
      * Sets new data & re-parses all children
      * @param data New data
      */
-    public setData(data: RawData) {
+    setData(data: RawData) {
         this.data = data;
 
         if (isRenderItem(this.renderer)) {
@@ -84,7 +79,7 @@ export default class RenderParser {
      * Sets new renderer and re-parses all children
      * @param renderer New RenderItem or SourceItem
      */
-    public setRenderer(renderer: AllRenderItems | AllSourceItems) {
+    setRenderer(renderer: AllRenderItems | AllSourceItems) {
         this.renderer = renderer;
 
         if (isRenderItem(this.renderer)) {
@@ -99,7 +94,7 @@ export default class RenderParser {
      * @param item ListSourceItem
      * @returns Array of RenderParser
      */
-    protected parseListSourceItem(item: ListSourceItem): RenderParser[] {
+    parseListSourceItem(item: ListSourceItem): RenderParser[] {
         const data = parseNested(this.data, item.source);
         if (isArray(data)) {
             return data.map((d) => this.constructSelf(d, item.renderer));
@@ -113,9 +108,7 @@ export default class RenderParser {
      * @param item GeneratorSourceItem
      * @returns Array of RenderParser
      */
-    protected parseGeneratorSourceItem(
-        item: GeneratorSourceItem
-    ): RenderParser[] {
+    parseGeneratorSourceItem(item: GeneratorSourceItem): RenderParser[] {
         const rawResults: RawData[] = this.execParsedFunction(item.function);
         return rawResults.map((result) =>
             this.constructSelf(result, item.renderer)
@@ -127,7 +120,7 @@ export default class RenderParser {
      * @param func ParsedFunction object
      * @returns Returned data
      */
-    protected execParsedFunction(func: ParsedFunction): any {
+    execParsedFunction(func: ParsedFunction): any {
         const executor = parseFunction(func.function);
         const parsedOptions: { [key: string]: any } = {};
         for (let k of Object.keys(func.opts)) {
@@ -141,7 +134,7 @@ export default class RenderParser {
      * @param item ValueItem to parse. Can be a literal, a "$directive:data" string, or a Text/Functional/DataItem
      * @returns The value retrieved/created
      */
-    protected parseValueItem(item: ValueItem): any {
+    parseValueItem(item: ValueItem): any {
         if (typeof item === "string") {
             if (item.startsWith("$")) {
                 const directiveRaw: string = item.split(":")[0].split("$")[1];
@@ -151,11 +144,13 @@ export default class RenderParser {
                 } else {
                     throw `Directive ${directiveRaw} not recognized.`;
                 }
-                const data = item.split(":")[1];
+                const path = item.split(":")[1];
 
                 switch (directive) {
                     case "data":
-                        return parseNested(this.data, data);
+                        return parseNested(this.data, path);
+                    default:
+                        throw `Unknown directive "${directive}"`;
                 }
             }
         } else if (isLiteral(item)) {
@@ -167,11 +162,10 @@ export default class RenderParser {
                 case "text":
                     let subbedText: string = item.content + "";
                     for (let k of Object.keys(item.substitutions)) {
-                        subbedText.replaceAll(
+                        let sub = this.parseValueItem(item.substitutions[k]);
+                        subbedText = subbedText.replaceAll(
                             `{{${k}}}`,
-                            this.parseValueItem(
-                                item.substitutions[k]
-                            ).toString()
+                            sub.toString()
                         );
                     }
                     return subbedText;
@@ -193,7 +187,7 @@ export default class RenderParser {
      * @param item SourceItem representation
      * @returns Array of RenderParsers
      */
-    protected parseSourceItem(item: AllSourceItems): RenderParser[] {
+    parseSourceItem(item: AllSourceItems): RenderParser[] {
         if (item.type in this.sourceParsers) {
             return this.sourceParsers[item.type].bind(this)(item);
         }
@@ -205,7 +199,7 @@ export default class RenderParser {
      * @param item RenderItem
      * @returns Array of RenderParsers
      */
-    protected expandRenderItems(item: AllRenderItems): RenderParser[] {
+    expandRenderItems(item: AllRenderItems): RenderParser[] {
         if ("children" in item) {
             if (isSourceItem(item.children)) {
                 return this.parseSourceItem(item.children); // TODO
@@ -227,18 +221,18 @@ export default class RenderParser {
      * @param renderer RenderItem or SourceItem
      * @returns RenderParser instance
      */
-    protected constructSelf(
+    constructSelf(
         data: RawData,
         renderer: AllRenderItems | AllSourceItems
     ): RenderParser {
-        return new this.SELF_CONSTRUCTOR(data, renderer);
+        return new RenderParser(data, renderer);
     }
 
     /**
      * Renders using current data and renderer
      * @returns JSX Element
      */
-    public render(): JSX.Element {
+    render(): JSX.Element {
         if (this.renderer.conditionalRender) {
             if (!this.execParsedFunction(this.renderer.conditionalRender)) {
                 return <span />;
@@ -246,17 +240,21 @@ export default class RenderParser {
         }
         if (this.renderer.supertype === "render") {
             if (Object.keys(this.renderers).includes(this.renderer.type)) {
-                return this.renderers[this.renderer.type](
-                    this.children.map((r) => r.render()),
-                    this.renderer
+                return (
+                    <span key={Math.random()}>
+                        {this.renderers[this.renderer.type].bind(this)(
+                            this.children.map((r) => r.render()),
+                            this.renderer
+                        )}
+                    </span>
                 );
             } else {
                 throw `Unknown renderer type ${this.renderer.type}`;
             }
         } else {
             return (
-                <span>
-                    {this.renderers[this.renderer.type](
+                <span key={Math.random()}>
+                    {this.renderers[this.renderer.type].bind(this)(
                         this.children.map((r) => r.render()),
                         this.renderer.renderer
                     )}

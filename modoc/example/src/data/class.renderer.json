@@ -1,1 +1,20 @@
-{}
+{
+    "supertype": "render",
+    "type": "group",
+    "children": [
+        {
+            "supertype": "render",
+            "type": "text",
+            "text": {
+                "type": "text",
+                "supertype": "value",
+                "content": "Class Name: {{name}}",
+                "substitutions": {
+                    "name": "$data:name"
+                }
+            },
+            "textType": "body1",
+            "style": []
+        }
+    ]
+}

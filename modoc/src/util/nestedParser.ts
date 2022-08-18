@@ -7,6 +7,9 @@ export default function parseNested(obj: any, keys: string | string[]): any {
     keys = keys.slice(1);
 
     if (Object.keys(obj).includes(key)) {
+        if (keys.length === 0) {
+            return obj[key];
+        }
         return parseNested(obj[key], keys);
     } else {
         throw new Error(

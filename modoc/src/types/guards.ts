@@ -3,11 +3,11 @@ import { AllRenderItems } from ".";
 import { Literal, ValueItem } from ".";
 
 export function isSourceItem(item: any): item is AllSourceItems {
-    return item.supertype && item.supertype === "source";
+    return item.supertype !== undefined && item.supertype === "source";
 }
 
 export function isRenderItem(item: any): item is AllRenderItems {
-    return item.supertype && item.supertype === "render";
+    return item.supertype !== undefined && item.supertype === "render";
 }
 
 export function isArray(item: any): item is Array<any> {
