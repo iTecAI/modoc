@@ -67,6 +67,7 @@
         "@emotion/react": "^11.10.0",
         "@emotion/styled": "^11.10.0",
         "@mui/material": "^5.9.2",
+        "react-icons": "^4.4.0",
         "sass": "^1.54.0"
     }
 }

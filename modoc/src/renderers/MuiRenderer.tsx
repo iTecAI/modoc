@@ -6,8 +6,11 @@ import {
     RenderGroupItem,
     RenderTextItem
 } from "../types/renderTypes";
-import { Chip, Divider, Typography } from "@mui/material";
+import { Avatar, Chip, Divider, Typography } from "@mui/material";
 import { RawData, AllRenderItems, AllSourceItems } from "../types";
+import * as ReactIconsMd from "react-icons/md";
+import * as ReactIconsGi from "react-icons/gi";
+import { IconType } from "react-icons";
 
 export default class MuiRenderParser<
     T extends AllRenderItems = AllRenderItems
@@ -20,11 +23,28 @@ export default class MuiRenderParser<
         divider: this.renderDivider
     };
 
+    private iconMap = {
+        md: ReactIconsMd,
+        gi: ReactIconsGi
+    };
+
     constructSelf(
         data: RawData,
         renderer: AllRenderItems | AllSourceItems
     ): MuiRenderParser {
         return new MuiRenderParser(data, renderer);
+    }
+
+    Icon(props: { name: string; [key: string]: any }) {
+        const [family, id] = props.name.split(".");
+        try {
+            const IconElement: IconType = (
+                this.iconMap[family as "md" | "gi"] as any
+            )[id];
+            return <IconElement className="mui-icon" {...props} />;
+        } catch (e) {
+            throw `Failed to load icon ${props.name}`;
+        }
     }
 
     renderGroup(children: JSX.Element[], _: RenderGroupItem): JSX.Element {
@@ -79,13 +99,18 @@ export default class MuiRenderParser<
         if (object.avatar) {
             switch (object.avatar.type) {
                 case "icon":
-                    break;
+                    avatar = (
+                        <Avatar>
+                            <this.Icon name={object.avatar.name} />
+                        </Avatar>
+                    );
             }
         }
         return (
             <Chip
                 variant={object.filled ? "filled" : "outlined"}
                 label={this.parseValueItem(object.text)}
+                avatar={avatar}
             />
         );
     }
