@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../schema/rendererItems.schema.json",
     "supertype": "render",
     "type": "group",
     "children": [
@@ -15,6 +16,26 @@
             },
             "textType": "body1",
             "style": []
+        },
+        {
+            "supertype": "render",
+            "type": "list",
+            "itemMarkers": {
+                "ordered": true,
+                "style": "decimal"
+            },
+            "children": {
+                "supertype": "source",
+                "type": "list",
+                "source": "multiclass_armor_proficiency",
+                "renderer": {
+                    "supertype": "render",
+                    "type": "text",
+                    "text": "$self",
+                    "style": ["bold"],
+                    "textType": "raw"
+                }
+            }
         }
     ]
 }

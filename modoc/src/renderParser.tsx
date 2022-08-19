@@ -153,6 +153,8 @@ export default class RenderParser<T extends AllRenderItems = AllRenderItems> {
                 switch (directive) {
                     case "data":
                         return parseNested(this.data, path);
+                    case "self":
+                        return this.data;
                     default:
                         throw `Unknown directive "${directive}"`;
                 }

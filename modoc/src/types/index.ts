@@ -35,8 +35,8 @@ export type DataItem = {
 };
 
 export type ValueItem = Literal | TextItem | FunctionalItem | DataItem;
-export type ValueStringDirective = "data";
-export const ValueStringDirectiveNames = ["data"];
+export type ValueStringDirective = "data" | "self";
+export const ValueStringDirectiveNames = ["data", "self"];
 
 export type RawDataValue = ValueItem | RawData | any[];
 export type RawData = { [key: string]: RawDataValue };

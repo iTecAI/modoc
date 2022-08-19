@@ -4,9 +4,11 @@ import {
     RenderChipItem,
     RenderDividerItem,
     RenderGroupItem,
+    RenderListItem,
+    RenderStackItem,
     RenderTextItem
 } from "../types/renderTypes";
-import { Avatar, Chip, Divider, Typography } from "@mui/material";
+import { Avatar, Chip, Divider, Stack, Typography } from "@mui/material";
 import { RawData, AllRenderItems, AllSourceItems } from "../types";
 import * as ReactIconsMd from "react-icons/md";
 import * as ReactIconsGi from "react-icons/gi";
@@ -20,7 +22,10 @@ export default class MuiRenderParser<
     } = {
         group: this.renderGroup,
         text: this.renderText,
-        divider: this.renderDivider
+        divider: this.renderDivider,
+        chip: this.renderChip,
+        stack: this.renderStack,
+        list: this.renderList
     };
 
     private iconMap = {
@@ -52,27 +57,33 @@ export default class MuiRenderParser<
     }
 
     renderText(_: JSX.Element[], object: RenderTextItem): JSX.Element {
-        return (
-            <Typography
-                variant={object.textType}
-                sx={{
-                    fontWeight: object.style.includes("bold") ? 400 : undefined,
-                    textDecorationLine: [
-                        object.style.includes("underline") ? "underline" : "",
-                        object.style.includes("strikethrough")
-                            ? "line-through"
-                            : ""
-                    ]
-                        .join(" ")
-                        .trim(),
-                    fontStyle: object.style.includes("italic")
-                        ? "italic"
-                        : undefined
-                }}
-            >
-                <span>{this.parseValueItem(object.text)}</span>
-            </Typography>
-        );
+        const style = {
+            fontWeight: object.style.includes("bold") ? 400 : undefined,
+            textDecorationLine: [
+                object.style.includes("underline") ? "underline" : "",
+                object.style.includes("strikethrough") ? "line-through" : ""
+            ]
+                .join(" ")
+                .trim(),
+            fontStyle: object.style.includes("italic") ? "italic" : undefined
+        };
+        if (object.textType === "raw") {
+            return (
+                <span className="modoc_mui-text" style={style}>
+                    {this.parseValueItem(object.text)}
+                </span>
+            );
+        } else {
+            return (
+                <Typography
+                    className="modoc_mui-text"
+                    variant={object.textType}
+                    sx={style}
+                >
+                    {this.parseValueItem(object.text)}
+                </Typography>
+            );
+        }
     }
 
     renderDivider(
@@ -81,6 +92,7 @@ export default class MuiRenderParser<
     ): JSX.Element {
         return (
             <Divider
+                className="modoc_mui-divider"
                 variant={
                     {
                         full: "fullWidth",
@@ -104,14 +116,68 @@ export default class MuiRenderParser<
                             <this.Icon name={object.avatar.name} />
                         </Avatar>
                     );
+                    break;
+                case "image":
+                    avatar = (
+                        <Avatar
+                            src={this.parseValueItem(object.avatar.source)}
+                            alt={this.parseValueItem(object.avatar.alt)}
+                        />
+                    );
+                    break;
+                case "text":
+                    avatar = (
+                        <Avatar>
+                            {this.parseValueItem(object.avatar.text)}
+                        </Avatar>
+                    );
+                    break;
             }
         }
         return (
             <Chip
+                className="modoc_mui-chip"
                 variant={object.filled ? "filled" : "outlined"}
                 label={this.parseValueItem(object.text)}
                 avatar={avatar}
             />
         );
+    }
+
+    renderStack(children: JSX.Element[], object: RenderStackItem): JSX.Element {
+        return (
+            <Stack
+                className="modoc_mui-stack"
+                direction={object.direction === "horizontal" ? "row" : "column"}
+                spacing={object.spacing || 2}
+            >
+                {children}
+            </Stack>
+        );
+    }
+
+    renderList(children: JSX.Element[], object: RenderListItem): JSX.Element {
+        const items: JSX.Element[] = children.map((c) => (
+            <li className="modoc_mui-list-item">{c}</li>
+        ));
+        if (object.itemMarkers.ordered) {
+            return (
+                <ol
+                    className="modoc_mui-list"
+                    style={{ listStyleType: object.itemMarkers.style }}
+                >
+                    {items}
+                </ol>
+            );
+        } else {
+            return (
+                <ul
+                    className="modoc_mui-list"
+                    style={{ listStyleType: object.itemMarkers.style }}
+                >
+                    {items}
+                </ul>
+            );
+        }
     }
 }

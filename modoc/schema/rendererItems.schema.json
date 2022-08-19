@@ -322,7 +322,8 @@
             "h5",
             "h6",
             "subtitle1",
-            "subtitle2"
+            "subtitle2",
+            "raw"
           ]
         },
         "style": {
@@ -611,8 +612,6 @@
       "required": [
         "supertype",
         "type",
-        "direction",
-        "spacing",
         "children"
       ],
       "additionalProperties": false

@@ -21,7 +21,8 @@ export type RenderTextItem = {
         | "h5"
         | "h6"
         | "subtitle1"
-        | "subtitle2";
+        | "subtitle2"
+        | "raw";
     style: ("italic" | "bold" | "strikethrough" | "underline")[];
     conditionalRender?: ParsedFunction;
 };
@@ -60,8 +61,8 @@ export type RenderStackItem = {
     supertype: "render";
     type: "stack";
     conditionalRender?: ParsedFunction;
-    direction: "horizontal" | "vertical";
-    spacing: number;
+    direction?: "horizontal" | "vertical";
+    spacing?: number;
     children: AllRenderItems[] | AllSourceItems;
 };
 
