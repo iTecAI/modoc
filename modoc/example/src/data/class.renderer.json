@@ -26,13 +26,22 @@
             },
             "children": {
                 "supertype": "source",
-                "type": "list",
-                "source": "multiclass_armor_proficiency",
+                "type": "generator",
+                "function": {
+                    "function": [
+                        "(e) => {",
+                        "return e.ptype.map((l) => ({name: l}))",
+                        "};"
+                    ],
+                    "opts": {
+                        "ptype": "$data:armor_proficiency"
+                    }
+                },
                 "renderer": {
                     "supertype": "render",
                     "type": "text",
-                    "text": "$self",
-                    "style": ["bold"],
+                    "style": [],
+                    "text": "$data:name",
                     "textType": "raw"
                 }
             }

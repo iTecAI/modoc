@@ -10,6 +10,6 @@ export default function parseFunction(code: string | string[]): Function {
     formattedFunction = formattedFunction.replace(/;$/g, "");
     return new Function(
         "options",
-        `(options) => (${formattedFunction})(options)`
+        `"use strict"; return (${formattedFunction})(options)`
     );
 }

@@ -130,7 +130,8 @@ export default class RenderParser<T extends AllRenderItems = AllRenderItems> {
         for (let k of Object.keys(func.opts)) {
             parsedOptions[k] = this.parseValueItem(func.opts[k]);
         }
-        return executor(parsedOptions);
+        const result = executor(parsedOptions);
+        return result;
     }
 
     /**
