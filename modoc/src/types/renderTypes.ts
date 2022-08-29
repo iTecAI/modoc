@@ -115,3 +115,10 @@ export type RenderTableRowItem = {
     conditionalRender?: ParsedFunction;
     cells: AllRenderItems[] | AllSourceItems;
 };
+
+export type RenderMarkdownItem = {
+    supertype: "render";
+    type: "markdown";
+    conditionalRender?: ParsedFunction;
+    text: ValueItem | ValueItem[];
+};

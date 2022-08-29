@@ -83,7 +83,8 @@ import {
     RenderListItem,
     RenderStackItem,
     RenderTableItem,
-    RenderTableRowItem
+    RenderTableRowItem,
+    RenderMarkdownItem
 } from "./renderTypes";
 
 export type AllRenderItems =
@@ -94,7 +95,8 @@ export type AllRenderItems =
     | RenderListItem
     | RenderStackItem
     | RenderTableItem
-    | RenderTableRowItem;
+    | RenderTableRowItem
+    | RenderMarkdownItem;
 export type AllSourceItems<T = any> =
     | ListSourceItem<T>
     | GeneratorSourceItem<T>;

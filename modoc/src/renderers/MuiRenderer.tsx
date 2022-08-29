@@ -5,6 +5,7 @@ import {
     RenderDividerItem,
     RenderGroupItem,
     RenderListItem,
+    RenderMarkdownItem,
     RenderStackItem,
     RenderTextItem
 } from "../types/renderTypes";
@@ -13,6 +14,8 @@ import { RawData, AllRenderItems, AllSourceItems } from "../types";
 import * as ReactIconsMd from "react-icons/md";
 import * as ReactIconsGi from "react-icons/gi";
 import { IconType } from "react-icons";
+import { isArray } from "../types/guards";
+import ReactMarkdown from "react-markdown";
 
 export default class MuiRenderParser<
     T extends AllRenderItems = AllRenderItems
@@ -25,7 +28,8 @@ export default class MuiRenderParser<
         divider: this.renderDivider,
         chip: this.renderChip,
         stack: this.renderStack,
-        list: this.renderList
+        list: this.renderList,
+        markdown: this.renderMarkdown
     };
 
     private iconMap = {
@@ -179,5 +183,20 @@ export default class MuiRenderParser<
                 </ul>
             );
         }
+    }
+
+    renderMarkdown(_: JSX.Element[], object: RenderMarkdownItem): JSX.Element {
+        let text: string;
+        if (isArray(object.text)) {
+            text = object.text.map(this.parseValueItem).join("\n");
+        } else {
+            text = this.parseValueItem(object.text);
+        }
+
+        return (
+            <span className="modoc_mui-markdown">
+                <ReactMarkdown children={text} />
+            </span>
+        );
     }
 }
